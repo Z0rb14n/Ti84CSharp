@@ -1,0 +1,27 @@
+﻿ClrHome
+Output(2,5,"BINOMIAL")
+Output(3,5,"THEOREM")
+Output(4,4,"CALCULATOR")
+Output(7,5, "BY: JON")
+Pause
+ClrHome
+Disp "(AX+B)^N"
+Input "A=",A
+Input "B=",B
+Input "N=",N
+Input "Term No.",C
+If C>(N+1)
+	Then
+	Disp "U W0T M8"
+	Stop
+Else
+	C—1→D
+(N nCr D)*A^(N—D)*(B^D)→F
+N—D→G
+If G=0
+	Then
+	Disp F
+	Stop
+Else
+	Disp F,"X^",G
+Stop

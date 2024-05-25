@@ -1,0 +1,44 @@
+﻿ClrHome
+Output(3,1,"UNIFORM CIRCULAR")
+Output(4,4,"KINEMATICS")
+Output(6,6,"BY: JON")
+Pause
+ClrHome
+Menu("Equations FOR:","ACCELERATION",1,"VELOCITY",2,"DISTANCE",3,"INWARD FORCE",4,"QUIT",5)
+Lbl 1
+ClrHome
+Disp "V²","—","R"," "
+Input "VELOCITY ",V
+Input "RADIUS: ",R
+V²/R→C
+Disp "ACCELERATION IS",C
+Stop
+Lbl 2
+ClrHome
+Disp "2πR","———"," T ", " "
+Input "RADIUS: ", R
+Input "PERIOD: ", T
+2πR/T→C
+Disp "VELOCITY IS: ",C
+Stop
+Lbl 3
+ClrHome
+Disp "D=VT"," "
+Input "TIME: ",T
+Input "VELOCITY: ",V
+VT→D
+Disp "DISTANCE IS: ",D
+Stop
+Lbl 4
+ClrHome
+Disp "MV²","——","R"," "
+Input "MASS: ",M
+Input "VELOCITY: ",V
+Input "RADIUS: ",R
+MV²/R→C
+Disp "INWARDS FORCE IS",C
+Stop
+Lbl 5
+ClrHome
+Disp "WELP."
+Stop

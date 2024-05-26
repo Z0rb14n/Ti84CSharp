@@ -1,4 +1,5 @@
-﻿using static Ti84App.Tokenizer;
+﻿using Ti84App.Operator;
+using static Ti84App.Tokenizer;
 
 namespace Ti84App;
 
@@ -47,9 +48,9 @@ public static class ExpressionParser
                 case Function:
                 case LeftParen:
                 case RightUnaryOperator:
+                case CurlyLeftParen:
                     operatorStack.Push(t);
                     break;
-                
                 case BinaryOperator:
                     while (operatorStack.TryPeek(out Token topStack) && topStack.type != LeftParen &&
                            (Precedence[topStack.data] > Precedence[t.data] ||
@@ -61,20 +62,65 @@ public static class ExpressionParser
                     operatorStack.Push(t);
                     break;
                 case Comma:
-                    while (operatorStack.TryPeek(out Token topStack) && topStack.type != LeftParen)
+                    while (operatorStack.TryPeek(out Token topStack) && topStack.type is not (LeftParen or CurlyLeftParen))
                     {
                         outputQueue.Enqueue(operatorStack.Pop());
                     }
 
+                    if (operatorStack.TryPeek(out Token testParen) && testParen.type is LeftParen or CurlyLeftParen)
+                    {
+                        testParen.count++;
+                        operatorStack.Pop();
+                        operatorStack.Push(testParen);
+                    }
+
+                    break;
+                case CurlyRightParen:
+                    bool foundCurlyLeftParen = false;
+                    Token curlyLeftParen;
+                    while (operatorStack.TryPeek(out curlyLeftParen))
+                    {
+                        if (curlyLeftParen.type == LeftParen)
+                        {
+                            throw new Exception("Mismatched parenthesis (expected {, got ( ): " + toRead);
+                        }
+
+                        if (curlyLeftParen.type == CurlyLeftParen)
+                        {
+                            foundCurlyLeftParen = true;
+                            break;
+                        }
+                        outputQueue.Enqueue(operatorStack.Pop());
+                    }
+
+                    if (!foundCurlyLeftParen)
+                    {
+                        throw new Exception("Mismatched parenthesis:" + toRead);
+                    }
+
+                    if (operatorStack.TryPeek(out Token curlySanity) && curlySanity.type != CurlyLeftParen)
+                    {
+                        throw new Exception("Sanity test failed: expected left paren but not on the top");
+                    }
+
+                    operatorStack.Pop();
+                    
+                    outputQueue.Enqueue(new Token() {type=Function, data=MakeListOperator.MakeListID, count = curlyLeftParen.count+1});
                     break;
                 case RightParen:
                     bool foundLeftParen = false;
-                    while (operatorStack.TryPeek(out Token topStack))
+                    Token leftParen;
+                    while (operatorStack.TryPeek(out leftParen))
                     {
-                        if (topStack.type == LeftParen)
+                        if (leftParen.type == LeftParen)
                         {
                             foundLeftParen = true;
                             break;
+                        }
+
+                        if (leftParen.type == CurlyLeftParen)
+                        {
+                            throw new Exception("Mismatched parenthesis (expected (, got {): " + toRead);
                         }
                         outputQueue.Enqueue(operatorStack.Pop());
                     }
@@ -92,7 +138,9 @@ public static class ExpressionParser
                     operatorStack.Pop();
                     if (operatorStack.TryPeek(out Token potentialFunc) && potentialFunc.type == Function)
                     {
-                        outputQueue.Enqueue(operatorStack.Pop());
+                        potentialFunc.count = leftParen.count+1;
+                        operatorStack.Pop();
+                        outputQueue.Enqueue(potentialFunc);
                     }
 
                     break;

@@ -2,7 +2,7 @@
 
 namespace Ti84App;
 
-public struct RationalOrDecimal
+public struct RationalOrDecimal : IComparable<RationalOrDecimal>
 {
 
     public bool IsRational;
@@ -181,6 +181,11 @@ public struct RationalOrDecimal
     public bool Equals(RationalOrDecimal other)
     {
         return IsRational == other.IsRational && RationalValue.Equals(other.RationalValue) && NumericValue == other.NumericValue;
+    }
+
+    public int CompareTo(RationalOrDecimal other)
+    {
+        return ((decimal)this).CompareTo((decimal)other);
     }
 
     public override bool Equals(object? obj)

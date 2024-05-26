@@ -57,6 +57,17 @@ public class TerminalEmulator
         Console.Clear();
     }
 
+    private static string? ToDisplay(object? obj)
+    {
+        if (obj == null) return "null";
+        if (obj is RationalOrDecimal[] rat)
+        {
+            return '{' + string.Join(' ', rat) + '}';
+        }
+
+        return obj.ToString();
+    }
+
     private static void Output(int row, int col, string str)
     {
         Console.SetCursorPosition(col - 1, row - 1); // one-indexed
@@ -78,7 +89,7 @@ public class TerminalEmulator
             throw new Exception("Output expects integer values");
         }
 
-        Output(r.ToInt32(), c.ToInt32(), strVal.ToString() ?? throw new Exception("Null output???"));
+        Output(r.ToInt32(), c.ToInt32(), ToDisplay(strVal) ?? throw new Exception("Null output???"));
     }
 
     private void Pause(string param)
@@ -109,10 +120,9 @@ public class TerminalEmulator
         foreach (string t in str)
         {
             string toWrite = "";
-            Console.WriteLine(t);
             if (t.Length != 0)
             {
-                toWrite = InterpretExpression(t).ToString() ??
+                toWrite = ToDisplay(InterpretExpression(t)) ??
                           throw new Exception("Null on interpret expression from Disp?");
             }
 

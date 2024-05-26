@@ -38,6 +38,8 @@ public static class Tokenizer
         Comma,
         LeftParen,
         RightParen,
+        CurlyLeftParen,
+        CurlyRightParen,
         RightUnaryOperator
     }
 
@@ -45,6 +47,7 @@ public static class Tokenizer
     {
         public TokenType type;
         public string data;
+        public int count;
 
         public override string ToString()
         {
@@ -192,6 +195,7 @@ public static class Tokenizer
                     {
                         Split(entry, todo, charToken, entry.startIndex+j, entry.startIndex+j+1);
                         didDoSomething = true;
+                        if (entry.tokenized) break;
                     }
                 }
 
@@ -266,6 +270,12 @@ public static class Tokenizer
                 return true;
             case ',':
                 token = new Token() { type = TokenType.Comma, data = "," };
+                return true;
+            case '{':
+                token = new Token() { type = TokenType.CurlyLeftParen, data = "{" };
+                return true;
+            case '}':
+                token = new Token() { type = TokenType.CurlyRightParen, data = "}" };
                 return true;
         }
 

@@ -29,8 +29,8 @@ public static class ExpressionEval
         new LogicalNotOperator(),
         new FactorialOperator(),
         new SquareOperator(),
-        new UnaryMaxOperator(),
-        new BinaryMaxOperator()
+        new VarargMaxOperator(),
+        new MakeListOperator()
     ];
     public static Dictionary<string, AbstractOperator> ops;
 
@@ -73,7 +73,7 @@ public static class ExpressionEval
                 case Function:
                 case BinaryOperator:
                 case RightUnaryOperator:
-                    if (ops.TryGetValue(t.data, out AbstractOperator? op)) op.Evaluate(valueStack);
+                    if (ops.TryGetValue(t.data, out AbstractOperator? op)) op.Evaluate(valueStack, t.count);
                     else throw new Exception("Don't have this function/operator: " + t);
                     break;
             }

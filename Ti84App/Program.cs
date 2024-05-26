@@ -2,12 +2,17 @@
 
 public static class Program
 {
+    private static TerminalEmulator _emulator = new();
     private static void Main(string[] args)
     {
-        TerminalEmulator emulator = new();
-        //emulator.Execute(File.ReadAllText("../../../data/BINOTHEO.txt"));
-        emulator.Execute(File.ReadAllText("../../../data/TESTFUNC.txt"));
-        //emulator.Execute(File.ReadAllText("../../../data/CIRCMOVE.txt"));
+        //Execute("BINOTHEO.txt");
+        Execute("TESTFUNC.txt");
+        //Execute("CIRCMOVE.txt");
+    }
+
+    private static void Execute(string program)
+    {
+        _emulator.Execute(File.ReadAllText($"../../../data/{program}"));
     }
     
     

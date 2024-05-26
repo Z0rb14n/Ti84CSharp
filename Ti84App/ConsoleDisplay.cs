@@ -76,6 +76,11 @@ public class ConsoleDisplay
             } else if (info.Key == ConsoleKey.Enter)
             {
                 return selected;
+            } else if (info.KeyChar is >= '0' and <= '9')
+            {
+                int index = info.KeyChar - '1';
+                if (index < 0) index = 9;
+                if (index < labels.Length) return index;
             }
             UpdateDisplay(false);
         }

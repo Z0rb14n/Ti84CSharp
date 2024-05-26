@@ -92,7 +92,7 @@ public class TerminalEmulator
                 Disp(splits[0]);
             }
 
-            _display.WaitForEnterPress();
+            ConsoleDisplay.WaitForEnterPress();
         }
         else if (splits.Length == 2)
         {
@@ -126,8 +126,7 @@ public class TerminalEmulator
         else
         {
             object var = InterpretExpression(str);
-            Debug.Assert(var is string);
-            _display.Write(var as string ?? throw new Exception("Input evaluated string is null"));
+            _display.Write(var as string ?? throw new Exception("Input evaluated string is null: " + str));
         }
 
         _variables.SetVariableValue(variable, InterpretExpression(_display.ReadLineNonEmpty()));
@@ -156,6 +155,21 @@ public class TerminalEmulator
         _variables.SetVariableValue(name, InterpretExpression(splits[0]));
     }
 
+    public string Menu(string[] param)
+    {
+        string title = InterpretExpression(param[0]) as string ?? throw new Exception("Menu title evaluated as null: " + param[0]);
+        string[] vars = new string[(param.Length - 1) /2];
+        string[] labels = new string[(param.Length - 1) /2];
+        for (int i = 0; i < vars.Length; i++)
+        {
+            object var = InterpretExpression(param[1+2*i]);
+            vars[i] = var as string ?? throw new Exception("Menu: evaluated string is null: " + param[1+2*i]);
+            labels[i] = param[2 + 2 * i];
+        }
+
+        return labels[_display.Menu(title, vars)];
+    }
+
     private object InterpretExpression(string inputString)
     {
         if (inputString[0] == '"' && inputString.Last() == '"')
@@ -180,7 +194,7 @@ public class TerminalEmulator
 
     public void Execute(string program)
     {
-        Block root = ControlBlockParser.Parse(program);
+        RootBlock root = ControlBlockParser.Parse(program);
         Stack<(Block, int)> blocks = new();
         blocks.Push((root, 0));
         while (blocks.Count > 0)
@@ -251,6 +265,24 @@ public class TerminalEmulator
                             throw new Exception($"Input expects 1-2 args, received {args.Length}: " + line);
                     }
 
+                    continue;
+                }
+
+                if (line.StartsWith("Menu("))
+                {
+                    if (!line.EndsWith(')'))
+                    {
+                        throw new Exception("Menu lacks closing brace: " + line);
+                    }
+                    string trimmedLine = line.Substring(5, line.Length - 1 - 5);
+                    string[] args = TrimAll(SplitArgs(trimmedLine));
+                    if (args.Length < 3) throw new Exception($"Menu has {args.Length} args; expected 3+: {line}");
+                    if (args.Length % 2 == 0)
+                        throw new Exception($"Menu needs odd number of args; received {args.Length}: {line}");
+
+                    string jumpTo = Menu(args);
+                    _display.WriteLine($"TODO JUMP TO {jumpTo}");
+                    // TODO JUMP
                     continue;
                 }
 

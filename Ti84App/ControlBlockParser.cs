@@ -12,11 +12,12 @@ public class ControlBlockParser
         public bool hasParsedBlock;
     }
 
-    public static Block Parse(string program) => Parse(program.Split('\n'));
+    public static RootBlock Parse(string program) => Parse(program.Split('\n'));
 
-    public static Block Parse(string[] lines)
+    public static RootBlock Parse(string[] lines)
     {
         lines = TrimAll(lines);
+        Dictionary<string, List<IBlock>> labels = new();
         List<IBlock> root = [];
         int index = 0;
         Stack<IfElseParseState> prev = new();
@@ -58,6 +59,14 @@ public class ControlBlockParser
                 prev.Pop();
                 index++;
                 continue;
+            } else if (lines[index].StartsWith("Lbl "))
+            {
+                string label = lines[index][4..];
+                if (label.Contains(' ')) throw new Exception("Label has extra space: " + lines[index]);
+                bool canAdd = labels.TryAdd(label, prev.Select(ifelse => ifelse.prev).Cast<IBlock>().ToList());
+                if (!canAdd) throw new Exception("Can't add??? duplicate label: " + lines[index]);
+                index++;
+                continue;
             }
             else
             {
@@ -90,7 +99,7 @@ public class ControlBlockParser
             index++;
         }
         
-        return new Block()
+        return new RootBlock()
         {
             Children = root.ToArray()
         };
@@ -104,6 +113,11 @@ public class IfElseBlock(string cond) : IBlock
     public string Condition = cond;
     public Block IfBlock = new Block();
     public Block? ElseBlock;
+}
+
+public class RootBlock : Block
+{
+    public Dictionary<string, List<IBlock>> Labels = new();
 }
 
 public class Block : IBlock

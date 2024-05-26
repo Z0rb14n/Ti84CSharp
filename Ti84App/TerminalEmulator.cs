@@ -8,6 +8,7 @@ using static Util;
 public class TerminalEmulator
 {
     private readonly VariableData _variables = new();
+    private readonly ConsoleDisplay _display = new();
 
     private static string[] SplitArgs(string str)
     {
@@ -52,11 +53,6 @@ public class TerminalEmulator
         return strings.ToArray();
     }
 
-    private static void ClearHome()
-    {
-        Console.Clear();
-    }
-
     private static string? ToDisplay(object? obj)
     {
         if (obj == null) return "null";
@@ -66,12 +62,6 @@ public class TerminalEmulator
         }
 
         return obj.ToString();
-    }
-
-    private static void Output(int row, int col, string str)
-    {
-        Console.SetCursorPosition(col - 1, row - 1); // one-indexed
-        Console.Write(str);
     }
 
     private void Output(string param1, string param2, string str)
@@ -89,7 +79,7 @@ public class TerminalEmulator
             throw new Exception("Output expects integer values");
         }
 
-        Output(r.ToInt32(), c.ToInt32(), ToDisplay(strVal) ?? throw new Exception("Null output???"));
+        _display.Output(r.ToInt32(), c.ToInt32(), ToDisplay(strVal) ?? throw new Exception("Null output???"));
     }
 
     private void Pause(string param)
@@ -102,7 +92,7 @@ public class TerminalEmulator
                 Disp(splits[0]);
             }
 
-            _ = Console.ReadLine();
+            _display.WaitForEnterPress();
         }
         else if (splits.Length == 2)
         {
@@ -126,30 +116,21 @@ public class TerminalEmulator
                           throw new Exception("Null on interpret expression from Disp?");
             }
 
-            Console.WriteLine(toWrite);
+            _display.WriteLine(toWrite);
         }
     }
 
     private void Input(string? str, string variable)
     {
-        if (str == null) Console.Write("?");
+        if (str == null) _display.Write("?");
         else
         {
             object var = InterpretExpression(str);
             Debug.Assert(var is string);
-            Console.Write(var.ToString());
+            _display.Write(var as string ?? throw new Exception("Input evaluated string is null"));
         }
 
-        int left = Console.CursorLeft;
-        int top = Console.CursorTop;
-        string? line = Console.ReadLine();
-        while (string.IsNullOrEmpty(line))
-        {
-            Console.SetCursorPosition(left, top);
-            line = Console.ReadLine();
-        }
-
-        _variables.SetVariableValue(variable, InterpretExpression(line));
+        _variables.SetVariableValue(variable, InterpretExpression(_display.ReadLineNonEmpty()));
     }
 
     public void Prompt(string line)
@@ -158,17 +139,8 @@ public class TerminalEmulator
         string[] vars = TrimAll(SplitArgs(line));
         foreach (string var in vars)
         {
-            Console.Write(var + "=?");
-            int left = Console.CursorLeft;
-            int top = Console.CursorTop;
-            string? input = Console.ReadLine();
-            while (string.IsNullOrEmpty(input))
-            {
-                Console.SetCursorPosition(left, top);
-                input = Console.ReadLine();
-            }
-
-            _variables.SetVariableValue(var, InterpretExpression(input));
+            _display.Write(var + "=?");
+            _variables.SetVariableValue(var, InterpretExpression(_display.ReadLineNonEmpty()));
         }
     }
 
@@ -222,7 +194,7 @@ public class TerminalEmulator
                 if (line == "") continue;
                 if (line == "ClrHome")
                 {
-                    ClearHome();
+                    _display.ClearHome();
                     continue;
                 }
 
@@ -284,7 +256,6 @@ public class TerminalEmulator
 
                 if (line == "Stop")
                 {
-                    Debug.WriteLine("Reached Stop. Stopping...");
                     return;
                 }
 

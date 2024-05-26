@@ -2,11 +2,11 @@
 
 namespace Ti84App;
 
-public class ControlBlockParser
+public static class ControlBlockParser
 {
     private class IfElseParseState(IfElseBlock prev)
     {
-        public IfElseBlock prev = prev;
+        public readonly IfElseBlock prev = prev;
         public bool hasSeenThen;
         public bool hasSeenElse;
         public bool hasParsedBlock;
@@ -63,6 +63,7 @@ public class ControlBlockParser
             {
                 string label = lines[index][4..];
                 if (label.Contains(' ')) throw new Exception("Label has extra space: " + lines[index]);
+                // TODO THIS DOESN'T WORK??? BRUH
                 bool canAdd = labels.TryAdd(label, prev.Select(ifelse => ifelse.prev).Cast<IBlock>().ToList());
                 if (!canAdd) throw new Exception("Can't add??? duplicate label: " + lines[index]);
                 index++;
@@ -101,7 +102,8 @@ public class ControlBlockParser
         
         return new RootBlock()
         {
-            Children = root.ToArray()
+            Children = root.ToArray(),
+            Labels = labels
         };
     }
 }

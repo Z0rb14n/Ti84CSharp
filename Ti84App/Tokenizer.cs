@@ -177,7 +177,7 @@ public static class Tokenizer
                 if (entry.tokenized) continue;
                 foreach (string str in RightUnaryOps)
                 {
-                    int index = entry.data.IndexOf(str);
+                    int index = entry.data.IndexOf(str, StringComparison.Ordinal);
                     if (index == -1) continue;
                     didDoSomething = true;
                     Split(entry, todo, new Token() { data = str, type = TokenType.RightUnaryOperator },

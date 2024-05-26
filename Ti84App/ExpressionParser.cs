@@ -10,6 +10,8 @@ public static class ExpressionParser
 {
     public static Dictionary<string, int> Precedence = new()
     {
+        ["\u00b2"] = 6,
+        ["!"] = 6,
         ["^"] = 5,
         [" nPr "] = 4,
         [" nCr "] = 4,

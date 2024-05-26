@@ -93,8 +93,8 @@ public static class ControlBlockParser
             if (prev.Count == 0) root.Add(toAdd);
             else
             {
-                if (prev.Peek().hasSeenElse) ((Block)prev.Peek().prev.ElseBlock!).Children.Add(toAdd);
-                else ((Block)prev.Peek().prev.IfBlock).Children.Add(toAdd);
+                if (prev.Peek().hasSeenElse) prev.Peek().prev.ElseBlock!.Children.Add(toAdd);
+                else prev.Peek().prev.IfBlock.Children.Add(toAdd);
             }
             if (toPush != null) prev.Push(toPush);
             index++;

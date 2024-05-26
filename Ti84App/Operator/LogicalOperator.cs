@@ -27,3 +27,13 @@ public class LogicalXorOperator : BinaryMathOperator
         return l != 0 ^ r != 0 ? 1 : 0;
     }
 }
+
+public class LogicalNotOperator : UnaryMathOperator
+{
+    public override string[] Ids => ["not"];
+
+    protected override RationalOrDecimal Operate(RationalOrDecimal op)
+    {
+        return op == 0 ? 1 : 0;
+    }
+}

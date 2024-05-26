@@ -13,4 +13,18 @@ public static class Util
         for (BigInteger i = BigInteger.One; i <= n; i++) ret *= i;
         return ret;
     }
+    
+    public static char FlipBracket(char c)
+    {
+        return c switch
+        {
+            '(' => ')',
+            ')' => '(',
+            '{' => '}',
+            '}' => '{',
+            '[' => ']',
+            ']' => '[',
+            _ => c
+        };
+    }
 }

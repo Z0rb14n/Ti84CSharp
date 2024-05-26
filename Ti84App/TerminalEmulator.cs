@@ -11,7 +11,45 @@ public class TerminalEmulator
 
     private static string[] SplitArgs(string str)
     {
-        return str.Split(',');
+        List<string> strings = new();
+        Stack<char> chars = new();
+        bool inString = false;
+        int left = 0;
+        for (int i = 0; i < str.Length; i++)
+        {
+            char c = str[i];
+            switch (c)
+            {
+                case '(':
+                case '{':
+                case '[':
+                    if (!inString) chars.Push(c);
+                    continue;
+                case '"':
+                    inString = !inString;
+                    continue;
+                case ')':
+                case '}':
+                case ']':
+                    if (inString) continue;
+                    if (!chars.TryPeek(out char top) || top != FlipBracket(c))
+                        throw new Exception("Mismatched brackets: " + str);
+                    chars.Pop();
+                    continue;
+                case ',':
+                    if (inString) continue;
+                    if (chars.Count == 0)
+                    {
+                        strings.Add(str[left..i]);
+                        left = i + 1;
+                    }
+                    break;
+            }
+        }
+
+        if (chars.Count != 0) throw new Exception("Mismatched brackets: " + str);
+        strings.Add(str[left..]);
+        return strings.ToArray();
     }
 
     private static void ClearHome()
@@ -52,8 +90,10 @@ public class TerminalEmulator
             {
                 Disp(splits[0]);
             }
+
             _ = Console.ReadLine();
-        } else if (splits.Length == 2)
+        }
+        else if (splits.Length == 2)
         {
             Disp(splits[0]);
             object var = InterpretExpression(splits[1]);
@@ -69,10 +109,13 @@ public class TerminalEmulator
         foreach (string t in str)
         {
             string toWrite = "";
+            Console.WriteLine(t);
             if (t.Length != 0)
             {
-                toWrite = InterpretExpression(t).ToString() ?? throw new Exception("Null on interpret expression from Disp?");
+                toWrite = InterpretExpression(t).ToString() ??
+                          throw new Exception("Null on interpret expression from Disp?");
             }
+
             Console.WriteLine(toWrite);
         }
     }
@@ -114,6 +157,7 @@ public class TerminalEmulator
                 Console.SetCursorPosition(left, top);
                 input = Console.ReadLine();
             }
+
             _variables.SetVariableValue(var, InterpretExpression(input));
         }
     }
@@ -136,6 +180,7 @@ public class TerminalEmulator
         {
             return inputString.Substring(1, inputString.Length - 2);
         }
+
         // so NEGATIVES use -
         // while minus uses the em dash — 
         if (Int32.TryParse(inputString, out int value))
@@ -160,7 +205,7 @@ public class TerminalEmulator
         {
             (Block block, int index) = blocks.Peek();
             blocks.Pop();
-            if (index < block.Children.Count-1) blocks.Push((block, index+1));
+            if (index < block.Children.Count - 1) blocks.Push((block, index + 1));
             if (block.Children[index] is OneLine oneLine)
             {
                 string line = oneLine.Line;
@@ -176,7 +221,7 @@ public class TerminalEmulator
                     Pause(line[5..]);
                     continue;
                 }
-                
+
 
                 if (line.StartsWith("Prompt ") || line == "Prompt")
                 {

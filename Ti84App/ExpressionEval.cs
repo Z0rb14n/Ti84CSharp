@@ -26,8 +26,11 @@ public static class ExpressionEval
         new LogicalAndOperator(),
         new LogicalOrOperator(),
         new LogicalXorOperator(),
+        new LogicalNotOperator(),
         new FactorialOperator(),
-        new SquareOperator()
+        new SquareOperator(),
+        new UnaryMaxOperator(),
+        new BinaryMaxOperator()
     ];
     public static Dictionary<string, AbstractOperator> ops;
 

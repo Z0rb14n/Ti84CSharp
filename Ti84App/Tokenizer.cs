@@ -16,6 +16,7 @@ public static class Tokenizer
 
     private static readonly HashSet<string> RightUnaryOps = ["!","\u00b2"];
     private static readonly HashSet<char> NumericalConsts = [EChar, PiChar];
+    private static readonly List<string> Functions = ["not", "max"];
     private static readonly HashSet<char> SingleCharOps;
     private static readonly HashSet<string> MultiCharOps;
 
@@ -193,6 +194,24 @@ public static class Tokenizer
                         didDoSomething = true;
                     }
                 }
+
+                if (entry.tokenized) continue;
+                if (entry.next != null && entry.next.tokenized && entry.next.token.type == TokenType.LeftParen)
+                {
+                    foreach (string func in Functions)
+                    {
+                        if (!entry.data.EndsWith(func)) continue;
+                        Token funcToken = new()
+                        {
+                            type = TokenType.Function,
+                            data = func
+                        };
+                        int end = entry.startIndex + entry.data.Length;
+                        Split(entry, todo, funcToken, end - func.Length,end);
+                        didDoSomething = true;
+                        break;
+                    }
+                }
             }
 
             if (!didDoSomething || todo.Count == 0) break;
@@ -208,16 +227,6 @@ public static class Tokenizer
                 node.token = new Token()
                 {
                     type = TokenType.Number,
-                    data = node.data
-                };
-                node.data = "";
-            }
-            else if (node.next is { tokenized: true, token.type: TokenType.LeftParen })
-            {
-                node.tokenized = true;
-                node.token = new Token()
-                {
-                    type = TokenType.Function,
                     data = node.data
                 };
                 node.data = "";

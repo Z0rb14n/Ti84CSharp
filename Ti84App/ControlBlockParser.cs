@@ -17,8 +17,9 @@ public static class ControlBlockParser
     public static RootBlock Parse(string[] lines)
     {
         lines = TrimAll(lines);
-        Dictionary<string, List<IBlock>> labels = new();
+        Dictionary<string, List<(Block, int)>> labels = new();
         List<IBlock> root = [];
+        RootBlock rootBlock = new();
         int index = 0;
         Stack<IfElseParseState> prev = new();
         while (index < lines.Length)
@@ -63,8 +64,9 @@ public static class ControlBlockParser
             {
                 string label = lines[index][4..];
                 if (label.Contains(' ')) throw new Exception("Label has extra space: " + lines[index]);
-                // TODO THIS DOESN'T WORK??? BRUH
-                bool canAdd = labels.TryAdd(label, prev.Select(ifelse => ifelse.prev).Cast<IBlock>().ToList());
+                bool canAdd = labels.TryAdd(label, prev.Select(ifelse => ifelse.hasSeenElse ? ifelse.prev.ElseBlock! : ifelse.prev.IfBlock)
+                    .Select(block => (block, block.Children.Count))
+                    .Append((rootBlock,root.Count)).ToList());
                 if (!canAdd) throw new Exception("Can't add??? duplicate label: " + lines[index]);
                 index++;
                 continue;
@@ -99,12 +101,11 @@ public static class ControlBlockParser
             if (toPush != null) prev.Push(toPush);
             index++;
         }
-        
-        return new RootBlock()
-        {
-            Children = root.ToArray(),
-            Labels = labels
-        };
+
+        rootBlock.Children = root.ToArray();
+        rootBlock.Labels = labels;
+
+        return rootBlock;
     }
 }
 
@@ -119,7 +120,7 @@ public class IfElseBlock(string cond) : IBlock
 
 public class RootBlock : Block
 {
-    public Dictionary<string, List<IBlock>> Labels = new();
+    public Dictionary<string, List<(Block, int)>> Labels = new();
 }
 
 public class Block : IBlock

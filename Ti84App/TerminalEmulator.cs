@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Ti84App.Variable;
+﻿using Ti84App.Variable;
 
 namespace Ti84App;
 
@@ -199,8 +198,7 @@ public class TerminalEmulator
         blocks.Push((root, 0));
         while (blocks.Count > 0)
         {
-            (Block block, int index) = blocks.Peek();
-            blocks.Pop();
+            (Block block, int index) = blocks.Pop();
             if (index < block.Children.Count - 1) blocks.Push((block, index + 1));
             if (block.Children[index] is OneLine oneLine)
             {
@@ -279,10 +277,7 @@ public class TerminalEmulator
                     if (args.Length < 3) throw new Exception($"Menu has {args.Length} args; expected 3+: {line}");
                     if (args.Length % 2 == 0)
                         throw new Exception($"Menu needs odd number of args; received {args.Length}: {line}");
-
-                    string jumpTo = Menu(args);
-                    _display.WriteLine($"TODO JUMP TO {jumpTo}");
-                    // TODO JUMP
+                    blocks = new Stack<(Block, int)>(root.Labels[Menu(args)]);
                     continue;
                 }
 

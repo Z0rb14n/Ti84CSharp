@@ -15,9 +15,9 @@ Disp "ACCELERATION IS",C
 Stop
 Lbl 2
 ClrHome
-Disp "2πR","———"," T ", " "
-Input "RADIUS: ", R
-Input "PERIOD: ", T
+Disp "2πR","———"," T "," "
+Input "RADIUS: ",R
+Input "PERIOD: ",T
 2πR/T→C
 Disp "VELOCITY IS: ",C
 Stop

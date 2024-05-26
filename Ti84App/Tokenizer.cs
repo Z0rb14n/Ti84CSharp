@@ -152,6 +152,7 @@ public static class Tokenizer
                 throw new Exception("Unmatched quote: " + inputString);
             Split(head, todo, new Token() { data = inputString[(index + 1)..(next)], type = TokenType.String }, index,
                 next + 1);
+            index = next + 1;
         }
         
         while (true)
@@ -253,6 +254,22 @@ public static class Tokenizer
         {
             tokens.Add(curr.token);
             curr = curr.next;
+        }
+
+        // add * between things
+        for (int i = 0; i < tokens.Count-1; i++)
+        {
+            if ((tokens[i].type == TokenType.RightParen && tokens[i + 1].type == TokenType.LeftParen) ||
+                (tokens[i].type is TokenType.Number or TokenType.Variable &&
+                 tokens[i + 1].type is TokenType.Number or TokenType.Variable))
+            {
+                tokens.Insert(i+1,new Token()
+                {
+                    data = "*",
+                    type = TokenType.BinaryOperator
+                });
+                i ++;
+            }
         }
 
         return tokens;

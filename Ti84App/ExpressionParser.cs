@@ -9,7 +9,7 @@ using static TokenType;
 
 public static class ExpressionParser
 {
-    private static readonly Dictionary<string, int> Precedence = new()
+    private static readonly FrozenDictionary<string, int> Precedence = new Dictionary<string, int>
     {
         ["\u00b2"] = 7,
         ["!"] = 7,
@@ -32,7 +32,7 @@ public static class ExpressionParser
         [" xor "] = 0,
         [" and "] = 0,
         [" or "] = 0,
-    };
+    }.ToFrozenDictionary();
 
     private static readonly FrozenSet<string> RightAssociative = FrozenSet.ToFrozenSet(["^"]);
     public static Queue<Token> Parse(string toRead)

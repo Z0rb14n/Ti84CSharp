@@ -2,7 +2,7 @@
 
 public static class EntryMain
 {
-    private static TerminalEmulator _emulator = new();
+    private static readonly TerminalEmulator _emulator = new();
     private static void Main(string[] args)
     {
         //Execute("BINOTHEO");

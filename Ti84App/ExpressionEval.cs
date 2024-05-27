@@ -34,7 +34,7 @@ public static class ExpressionEval
         new NegationOperator(),
         new SquareRootOperator()
     ];
-    public static Dictionary<string, AbstractOperator> ops;
+    private static Dictionary<string, AbstractOperator> ops;
 
     static ExpressionEval()
     {

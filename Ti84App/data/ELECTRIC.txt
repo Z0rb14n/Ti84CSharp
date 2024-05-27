@@ -1,0 +1,53 @@
+﻿ClrHome
+Output(2,3,"ELECTRICITY")
+Output(3,4,"CALCULATOR"
+Output(6,6,"BY: JON")
+Pause
+ClrHome
+Menu("SOLVE FOR:","FORCE",1,"ELEC FIELD",2,"PE",3,"VOLTAGE",4,"WORK",5,"QUIT",6)
+Lbl 6
+Disp "WELP."
+Stop
+Lbl 1
+Disp "KQ1Q2/R²"
+Input "Q1=",A
+Input "Q2=",B
+Input "R=",R
+8.987551787*10^9→K
+K*A*B/(R²)→C
+Disp C,"NEWTONS"
+Stop
+Lbl 2
+Disp "KQ/R²"
+Input "Q=",Q
+Input "R=",R
+8.987551787*10^9→K
+K*Q/R²→C
+Disp C,"N/C"
+Stop
+Lbl 3
+Disp "-KQ1Q2/R"
+8.987551787*10^9→K
+Input "Q1=",A
+Input "Q2=",B
+Input "R=",R
+-K*A*B/R→C
+Disp C,"J"
+Stop
+Lbl 4
+Disp "KQ/r"
+Input "Q=",Q
+8.987551787*10^9→K
+Input "R=",R
+K*Q/R→C
+Disp C,"V"
+Stop
+Lbl 5
+Disp "-KQ1Q2/R"
+Input "Q1=",A
+Input "Q2=",B
+Input "R=",R
+8.987551787*10^9→K
+-K*A*B/R→C
+Disp C,"J"
+Stop

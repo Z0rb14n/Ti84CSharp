@@ -233,12 +233,7 @@ public class TerminalEmulator
 
                 if (line.StartsWith("Output("))
                 {
-                    if (!line.EndsWith(')'))
-                    {
-                        throw new Exception("Output lacks closing brace: " + line);
-                    }
-
-                    string trimmedLine = line.Substring(7, line.Length - 1 - 7);
+                    string trimmedLine = line.Substring(7, line.Length  - (line.EndsWith(')') ? 1 : 0) - 7);
                     string[] args = TrimAll(SplitArgs(trimmedLine));
                     if (args.Length != 3) throw new Exception($"Output has {args.Length} args, expected 3: " + line);
                     Output(args[0], args[1], args[2]);
@@ -268,11 +263,7 @@ public class TerminalEmulator
 
                 if (line.StartsWith("Menu("))
                 {
-                    if (!line.EndsWith(')'))
-                    {
-                        throw new Exception("Menu lacks closing brace: " + line);
-                    }
-                    string trimmedLine = line.Substring(5, line.Length - 1 - 5);
+                    string trimmedLine = line.Substring(5, line.Length - (line.EndsWith(')') ? 1 : 0) - 5);
                     string[] args = TrimAll(SplitArgs(trimmedLine));
                     if (args.Length < 3) throw new Exception($"Menu has {args.Length} args; expected 3+: {line}");
                     if (args.Length % 2 == 0)

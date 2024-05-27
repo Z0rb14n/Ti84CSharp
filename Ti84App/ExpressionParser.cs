@@ -1,4 +1,5 @@
-﻿using Ti84App.Operator;
+﻿using System.Collections.Frozen;
+using Ti84App.Operator;
 using static Ti84App.Tokenizer;
 
 namespace Ti84App;
@@ -8,10 +9,11 @@ using static TokenType;
 
 public static class ExpressionParser
 {
-    public static Dictionary<string, int> Precedence = new()
+    private static readonly Dictionary<string, int> Precedence = new()
     {
-        ["\u00b2"] = 6,
-        ["!"] = 6,
+        ["\u00b2"] = 7,
+        ["!"] = 7,
+        ["-"] = 6,
         ["^"] = 5,
         [" nPr "] = 4,
         [" nCr "] = 4,
@@ -32,7 +34,7 @@ public static class ExpressionParser
         [" or "] = 0,
     };
 
-    public static HashSet<string> RightAssociative = ["^"];
+    private static readonly FrozenSet<string> RightAssociative = FrozenSet.ToFrozenSet(["^"]);
     public static Queue<Token> Parse(string toRead)
     {
         Queue<Token> outputQueue = new();
@@ -50,6 +52,7 @@ public static class ExpressionParser
                 case Function:
                 case LeftParen:
                 case RightUnaryOperator:
+                case LeftUnaryOperator:
                 case CurlyLeftParen:
                     operatorStack.Push(t);
                     break;

@@ -50,4 +50,32 @@ public class ListVariable : IVariable<RationalOrDecimal[]>
         if (_entries == null) return "undefined";
         return "{" + string.Join(' ', _entries) + "}";
     }
+
+    public static bool TryGetName(string name, out string ret)
+    {
+        ret = "";
+        if (name.StartsWith(SmallL))
+        {
+            bool isValid = name.Length <= 6;
+            if (isValid) ret = name;
+            return isValid;
+        }
+
+        if (name.Length == 2 && name[0] == 'L')
+        {
+            char c = name[1];
+
+            if (c >= SubscriptChars[1] && c <= SubscriptChars[6])
+            {
+                ret = name;
+                return true;
+            }
+
+            ret = SmallL + name;
+            return true;
+        }
+
+        if (name.Length <= 5) ret = SmallL + name;
+        return name.Length <= 5;
+    }
 }

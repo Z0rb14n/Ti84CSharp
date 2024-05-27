@@ -45,40 +45,16 @@ public class VariableData
             if (has) value = sv.Value;
             return has;
         }
+
         return false;
     }
 
     public void SetVariableValue(string name, in object? value)
     {
-        if (name.Length == 1)
-        {
-            bool has = RealVars.TryGetValue(name[0], out RealVariable rv);
-            if (!has) throw new Exception("Don't have real variable named " + name);
-            if (value is RationalOrDecimal rat) rv.Value = rat;
-            // reals are fine with setting invalid stuff apparently???
-            return;
-        }
-        if (!name.StartsWith("Str"))
-        {
-            bool has = ListVars.TryGetValue(name, out ListVariable lv);
-            if (!has) throw new Exception("Don't have list variable named " + name);
-            if (value is not RationalOrDecimal[] rats)
-                throw new Exception("Variable " + name + " is a list variable; received " + value?.GetType());
-            lv.Value = rats;
-            return;
-        }
-
-        if (name.Length == 4)
-        {
-            bool has = StringVars.TryGetValue(name[3] - '0', out StringVariable sv);
-            if (!has) throw new Exception("Don't have string variable named " + name);
-            if (value is not string str) throw new Exception("Variable " + name + " is a string variable; received " + value?.GetType());
-            sv.Value = str;
-            return;
-        }
-        throw new Exception("Cannot locate variable " + name);
+        bool success = TrySetVariableValue(name, value);
+        if (!success) throw new Exception($"Couldn't set variable {name} with value {value}");
     }
-    
+
     public bool TrySetVariableValue(string name, in object? value)
     {
         if (name.Length == 1)
@@ -87,29 +63,37 @@ public class VariableData
             if (!has) return false;
             if (value is RationalOrDecimal rat) rv.Value = rat;
             // reals are fine with setting invalid stuff apparently???
+            if (value is RationalOrDecimal[] arr)
+            {
+                bool isValid = ListVariable.TryGetName(name, out string lvname);
+                if (!isValid) return false;
+                _ = ListVars.TryAdd(lvname, new ListVariable(name));
+                ListVars[lvname].Value = arr;
+            }
             return true;
         }
 
-        if (!name.StartsWith("Str"))
+        if (name.StartsWith("Str"))
         {
-            bool has = ListVars.TryGetValue(name, out ListVariable lv);
-            if (!has) return false;
-            if (value is not RationalOrDecimal[] rats) return false;
-            lv.Value = rats;
-            return true;
-        }
-
-        if (name.Length == 4)
-        {
+            if (name.Length != 4) return false;
             bool has = StringVars.TryGetValue(name[3] - '0', out StringVariable sv);
-            if (!has) return false;
-            if (value is not string str) return false;
+            if (!has || value is not string str) return false;
             sv.Value = str;
             return true;
         }
+        
+        if (value is RationalOrDecimal[] rats)
+        {
+            bool isValid = ListVariable.TryGetName(name, out string lvname);
+            if (!isValid) return false;
+            _ = ListVars.TryAdd(lvname, new ListVariable(name));
+            ListVars[name].Value = rats;
+            return true;
+        }
+
         return false;
     }
-    
+
     public IVariable<T> GetVariable<T>(string name)
     {
         if (name.Length == 1)

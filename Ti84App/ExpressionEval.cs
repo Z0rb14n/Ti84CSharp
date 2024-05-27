@@ -31,7 +31,8 @@ public static class ExpressionEval
         new SquareOperator(),
         new VarargMaxOperator(),
         new MakeListOperator(),
-        new NegationOperator()
+        new NegationOperator(),
+        new SquareRootOperator()
     ];
     public static Dictionary<string, AbstractOperator> ops;
 

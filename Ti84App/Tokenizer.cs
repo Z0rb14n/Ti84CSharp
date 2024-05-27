@@ -20,7 +20,7 @@ public static class Tokenizer
     private static readonly FrozenSet<char> LeftUnaryOps = FrozenSet.ToFrozenSet(['-']);
     private static readonly FrozenSet<char> RightUnaryOps = FrozenSet.ToFrozenSet(['!','\u00b2']);
     private static readonly FrozenSet<char> NumericalConsts = FrozenSet.ToFrozenSet([EChar, PiChar]);
-    private static readonly List<string> Functions = ["not", "max"];
+    private static readonly List<string> Functions = ["not", "max","\u221a"];
     private static readonly FrozenSet<char> SingleCharOps;
 
     static Tokenizer()

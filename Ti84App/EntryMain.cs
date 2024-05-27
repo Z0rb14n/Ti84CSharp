@@ -10,7 +10,8 @@ public static class EntryMain
         //Execute("CIRCMOVE");
         //Execute("TESTCURSOR");
         // Execute("DEG2RAD");
-        Execute("ELECTRIC");
+        // Execute("ELECTRIC");
+        Execute("FGRAVITY");
     }
 
     private static void Execute(string program)

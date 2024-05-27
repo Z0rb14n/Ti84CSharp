@@ -188,6 +188,15 @@ public class TerminalEmulator
             };
         }
 
+        if (decimal.TryParse(inputString, out decimal d))
+        {
+            return new RationalOrDecimal
+            {
+                IsRational = false,
+                NumericValue = d
+            };
+        }
+
         return ExpressionEval.Evaluate(ExpressionParser.Parse(inputString), _variables);
     }
 

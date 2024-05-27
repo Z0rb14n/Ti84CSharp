@@ -1,0 +1,46 @@
+﻿ClrHome
+Output(2,3,"FG=G*M1*M2/R²"
+Output(3,1,"FORCE OF GRAVITY"
+Output(4,4,"CALCULATOR"
+Output(6,5,"BY: JON"
+Pause
+Menu("CALCULATE WHAT?","MASS",1,"R",2,"FG",3,"ACCELERATION",4,"QUIT",5)
+Lbl 1
+ClrHome
+Input "FG (NEWTONS)=",F
+Input "R (M)=",R
+Input "M2 (KG)=",M
+6.67*10^-11→G
+(F*R²)/(G*M)→E
+Disp "M1 IS",E,"KG."
+Stop
+Lbl 2
+ClrHome
+Input "FG (NEWTONS)=",F
+Input "M1 (KG)=",M
+Input "M2 (KG)=",N
+6.67*10^-11→G
+√((G*M*N)/F)→R
+Disp "R IS",R,"METERS."
+Stop
+Lbl 3
+ClrHome
+Input "M1 (KG)=",M
+Input "M2 (KG)=",N
+Input "R (M)=",R
+6.67*10^-11→G
+(G*M*N)/(R²)→F
+Disp "FG IS",F,"NEWTONS."
+Stop
+Lbl 4
+ClrHome
+Input "M2=",M
+Input "R=",R
+(6.67*(10^-11)*M*R)→A
+Disp "ACCELERATION IS:"
+Disp A,"M/S²"
+Stop
+Lbl 5
+ClrHome
+Disp "WELP."
+Stop
